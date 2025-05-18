@@ -1,0 +1,8 @@
+prefix=/home/robot/moveit_ws/devel
+
+Name: iiwa7_moveit_config
+Description: Description of iiwa7_moveit_config
+Version: 0.3.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
