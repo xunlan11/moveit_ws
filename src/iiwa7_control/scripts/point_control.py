@@ -188,7 +188,8 @@ class PointControl:
         self.clear_markers()
         # 初始姿态：非奇异
         rospy.loginfo("============ 移动到初始姿态 ============")
-        ready_joint_angles = [0.0, np.deg2rad(-15), 0.0, np.deg2rad(-90), 0.0, np.deg2rad(90), 0.0]
+        # ready_joint_angles = [0.0, np.deg2rad(-15), 0.0, np.deg2rad(-90), 0.0, np.deg2rad(90), 0.0]
+        ready_joint_angles = [0.0, 0, 0.0, 0, 0.0, 0, 0.0]
         if not self.move_J(ready_joint_angles):
             rospy.logerr("移动到初始姿态失败，中止。")
             return

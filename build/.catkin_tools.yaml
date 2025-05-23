@@ -1,0 +1,6 @@
+devel_space: /home/robot/moveit_ws/devel
+install: false
+install_space: /home/robot/moveit_ws/install
+profile: default
+source_space: /home/robot/moveit_ws/src
+workspace: /home/robot/moveit_ws

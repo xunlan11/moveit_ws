@@ -1,0 +1,1 @@
+/home/robot/moveit_ws/devel/.private/iiwa7_control/lib/pkgconfig/iiwa7_control.pc

@@ -68,7 +68,7 @@ set(differentiable-robot-model_CONFIG_INCLUDED TRUE)
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
   set(differentiable-robot-model_SOURCE_PREFIX /home/robot/moveit_ws/src/differentiable-robot-model)
-  set(differentiable-robot-model_DEVEL_PREFIX /home/robot/moveit_ws/devel)
+  set(differentiable-robot-model_DEVEL_PREFIX /home/robot/moveit_ws/devel/.private/differentiable-robot-model)
   set(differentiable-robot-model_INSTALL_PREFIX "")
   set(differentiable-robot-model_PREFIX ${differentiable-robot-model_DEVEL_PREFIX})
 else()

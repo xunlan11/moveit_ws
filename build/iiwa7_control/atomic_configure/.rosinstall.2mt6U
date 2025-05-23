@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/robot/moveit_ws/devel/.private/iiwa7_control/setup.sh

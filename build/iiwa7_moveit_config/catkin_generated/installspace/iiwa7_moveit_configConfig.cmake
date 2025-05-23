@@ -68,7 +68,7 @@ set(iiwa7_moveit_config_CONFIG_INCLUDED TRUE)
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
   set(iiwa7_moveit_config_SOURCE_PREFIX /home/robot/moveit_ws/src/iiwa7_moveit_config)
-  set(iiwa7_moveit_config_DEVEL_PREFIX /home/robot/moveit_ws/devel)
+  set(iiwa7_moveit_config_DEVEL_PREFIX /home/robot/moveit_ws/devel/.private/iiwa7_moveit_config)
   set(iiwa7_moveit_config_INSTALL_PREFIX "")
   set(iiwa7_moveit_config_PREFIX ${iiwa7_moveit_config_DEVEL_PREFIX})
 else()

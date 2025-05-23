@@ -30,6 +30,9 @@
   ```catkin_make```
   ```echo "source ~/moveit_ws/devel/setup.bash" >> ~/.bashrc```
   ```source ~/.bashrc```
+### 安装RViz和Gazebo
+- ```sudo apt install ros-noetic-rviz```
+- ```sudo apt install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control```
 ### 安装机器臂（iiwa7）包 
 - 下载urdf文件：
   ```cd ~/moveit_ws/src```
@@ -41,6 +44,7 @@
   ![error1](./figure/error1.png)
   - 安装mesa工具```sudo ubuntu-drivers autoinstall```
   - 修改urdf文件（位于/home/robot/moveit_ws/src/differentiable-robot-model/diff_robot_data/kuka_iiwa/urdf/iiwa7.urdf）：为<mesh filename="meshes/iiwa7/x/x"/>在meshes前添加"package://differentiable-robot-model/diff_robot_data/kuka_iiwa/"
+  - 建议直接复制urdf文件，后续还有修改。
 - MoveIt Setup Assistant：
   - 自碰撞矩阵：Self-Collisions -> Generate Collision Matrix
   - 虚拟基座关节：Virtual Joints -> Add Virtual Joint -> Virtual Joint Name:virtual_joint -> Parent Frame Name:world
@@ -52,7 +56,7 @@
 - 编译测试：
   ```cd ~/moveit_ws```
   ```catkin_make```
-  ```roslaunch iiwa7_moveit_config demo.launch```
+  ```roslaunch iiwa7_moveit_config demo.launch```（需要点确定）
 ## iiwa7
 ### RViz控制
 - 创建控制包
@@ -61,20 +65,44 @@
   ```cd iiwa7_control```
   ```mkdir -p scripts```
 - 点位控制：五角星+避障
-  - 代码：
-    - ```touch scripts/point_control.py```、
+  - 控制代码：
+    - ```touch scripts/point_control.py```
     - ```chmod +x scripts/point_control.py```
     - 代码解析见源码。
   - 运行：
     - ```roslaunch iiwa7_moveit_config demo.launch```
+    - 去除原始：左上Displays -> MotionPlanning -> Planning Request -> Query Goal State取消
+    - 可视化轨迹：左中Add -> Maker -> OK -> 左中Maker -> Maker Topic下拉选取话题
     - ```rosrun iiwa7_control point_control.py```
-    - 可视化轨迹：左上display -> 最下Planned Path -> Show Trail
-                左中Add -> Maker -> OK -> 左中Maker -> Maker Topic下拉选取话题
-- 轨迹控制：字符（字母/数字）
-  - 代码：
+- 轨迹控制：字符（字母/数字）内外轮廓
+  - 获取轨迹代码：
+    - ```touch scripts/letter.py```
+    - 代码解析见源码。
+  - 控制代码：
     - ```touch scripts/trajectory_control.py```
     - ```chmod +x scripts/trajectory_control.py```
     - 代码解析见源码。
   - 运行：
     - ```roslaunch iiwa7_moveit_config demo.launch```
+    - 可视化轨迹：左中Add -> Maker -> OK -> 左中Maker -> Maker Topic下拉选取话题
     - ```rosrun iiwa7_control trajectory_control.py```
+### Gazebo控制
+- 控制器配置文件：iiwa7_moveit_config/config/controllers.yaml，详细代码略。
+  - iiwa_arm_controller/gains：作用于上层控制器。影响跟踪输入的目标轨迹、平滑过渡和跟踪误差响应。
+  - gazebo_ros_control/pid_gains：作用于Gazebo插件。直接模拟硬件底层伺服控制器行为，决定仿真环境中的物理表现（刚度、阻尼、扰动抵抗能力，响应速度和稳定性）。
+- Gazebo启动文件：iiwa7_moveit_config/launch/iiwa7_gazebo.launch，详细代码略。
+  - 重新编译。
+- 修改：
+  - 确保信息交互（使movelt和gazebo的信息在同一空间下）：修改iiwa7_moveit_config/launch/ros_control_moveit_controller_manager.launch.xml文件，详细代码略。
+  - 修改urdf文件：
+    - 固定基坐标系：末尾添加部分。
+    - 替换过时语法：全部<hardwareInterface>PositionJointInterface</hardwareInterface>-><hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+- 重新编译：
+  - ```cd ~/moveit_ws```
+  - ```rm -rf build/ devel/```
+  - ```catkin build```
+- 启动
+  - ```roslaunch iiwa7_moveit_config iiwa7_gazebo.launch```（一次运行后关闭界面新建终端后才能重新运行）
+  - ```roslaunch iiwa7_moveit_config demo.launch moveit_controller_manager:=ros_control```
+  - ```rosrun iiwa7_control point_control.py```（gazebo中没有显式避障）
+  - ```rosrun iiwa7_control trajectory_control.py```

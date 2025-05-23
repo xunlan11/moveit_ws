@@ -24,7 +24,7 @@ class TrajectoryControl:
             queue_size=20
             )
         self.marker_publisher = rospy.Publisher(
-            '/eef_trajectory_marker',
+            '/visualization_marker',
             Marker,
             queue_size=10
             )
@@ -117,61 +117,73 @@ class TrajectoryControl:
             rospy.logerr("移动到初始姿态失败，中止。")
             return
         rospy.loginfo("成功移动到初始姿态。")
-        # 获取当前姿态
-        current_eef_pose = self.move_group.get_current_pose().pose
-        # 获取字母并生成轨迹
-        rospy.loginfo("============ 输入字符（字母/数字）并生成轨迹 ============")
-        input_char_str = ""
-        while not input_char_str:
-            try:
-                input_char_str = input("请输入要绘制的单个字符（字母/数字）并按回车键: ").strip()
-                if not input_char_str:
-                    rospy.logwarn("输入为空，请重新输入。")
-                elif len(input_char_str) > 1:
-                    rospy.logwarn(f"输入了多个字符 ('{input_char_str}')。将仅使用第一个字符: '{input_char_str[0]}'")
-                    input_char_str = input_char_str[0]
-            except EOFError:
-                rospy.logerr("接收到文件结束符，无法获取输入，使用 'A'。")
-                input_char_str = 'A'
+        while True:
+            # 获取当前姿态
+            current_eef_pose = self.move_group.get_current_pose().pose
+            # 清除上一个字符的轨迹可视化
+            self.clear_markers(ns="letter_trajectory")
+            rospy.sleep(0.1)
+            # 获取字符并生成轨迹
+            rospy.loginfo("============ 输入字符（字母/数字）并生成轨迹 ============")
+            input_char_str = ""
+            while not input_char_str:
+                try:
+                    input_char_str = input("请输入要绘制的单个字符（字母/数字）并按回车键 (直接回车退出): ").strip()
+                    if not input_char_str:
+                        rospy.loginfo("未输入字符，退出。")
+                        break 
+                    elif len(input_char_str) > 1:
+                        rospy.logwarn(f"输入多个字符 ('{input_char_str}')，仅使用第一个字符: '{input_char_str[0]}'")
+                        input_char_str = input_char_str[0]
+                except EOFError:
+                    rospy.logerr("接收到文件结束符，无法获取输入，将使用默认值 'A' 。")
+                    input_char_str = 'A' 
+                    break
+                except Exception as e:
+                    rospy.logerr(f"读取输入时发生错误，将使用默认值 'A'。")
+                    input_char_str = 'A'
+                    break
+            if not input_char_str:
                 break
-            except Exception as e:
-                rospy.logerr(f"读取输入时发生错误: {e}，使用 'A'。")
-                input_char_str = 'A'
-                break
-        char_to_draw = input_char_str
-        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" 
-        desired_letter_height_m = 0.1 # 10cm高
-        num_samples_per_curve = 10    # 曲线段采样点数
-        letter_waypoints = letter.generate_letter_waypoints_from_font(
-            char_to_draw=char_to_draw,
-            font_path=font_path,
-            desired_letter_height_m=desired_letter_height_m,
-            num_samples_per_curve=num_samples_per_curve,
-            center_pose=current_eef_pose, # 使用当前位姿作为中心
-            rospy_instance=rospy
-        )
-        if not letter_waypoints:
-            rospy.logerr(f"未能为字符 '{char_to_draw}' 生成轨迹点。")
-        else:
-            rospy.loginfo(f"成功为字符 '{char_to_draw}' 生成 {len(letter_waypoints)} 个轨迹点。")
-            # 显示生成的绿色轨迹点
-            self.show_path(letter_waypoints, ns="letter_trajectory", r=0.0, g=1.0, b=0.0)
-            rospy.sleep(1)
-            rospy.loginfo("============ 规划笛卡尔路径 ============")
-            letter_plan, fraction = self.plan_cartesian_path(letter_waypoints)
-            if fraction > 0.9:
-                rospy.loginfo(f"轨迹规划成功 (覆盖率 {fraction*100:.2f}%)，准备执行。")
-                rospy.loginfo("============ 执行轨迹 ============")
-                self.execute_plan(letter_plan)
-                rospy.loginfo(f"字符 '{char_to_draw}' 绘制完成。")
+            char_to_draw = input_char_str
+            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" 
+            desired_letter_height_m = 0.15 # 10cm高
+            num_samples_per_curve = 15
+            letter_waypoints = letter.generate_letter_waypoints_from_font(
+                char_to_draw=char_to_draw,
+                font_path=font_path,
+                desired_letter_height_m=desired_letter_height_m,
+                num_samples_per_curve=num_samples_per_curve,
+                center_pose=current_eef_pose, # 使用当前位姿作为中心
+                rospy_instance=rospy
+            )
+            if not letter_waypoints:
+                rospy.logerr(f"未能为字符 '{char_to_draw}' 生成轨迹点。")
             else:
-                rospy.logwarn(f"轨迹规划覆盖率较低 ({fraction*100:.2f}%)，不执行。")
-            rospy.sleep(2)
-        # 回到初始姿态
-        rospy.loginfo("============ 回到初始姿态 ============")
-        home_joint_angles = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        if not self.move_J(home_joint_angles):
-            rospy.logwarn("回到初始姿态失败。")
+                rospy.loginfo(f"成功为字符 '{char_to_draw}' 生成 {len(letter_waypoints)} 个轨迹点。")
+                # 显示生成的绿色轨迹点
+                self.show_path(letter_waypoints, ns="letter_trajectory", r=0.0, g=1.0, b=0.0)
+                rospy.sleep(1)
+                rospy.loginfo("============ 规划笛卡尔路径 ============")
+                letter_plan, fraction = self.plan_cartesian_path(letter_waypoints)
+                if fraction > 0.85:
+                    rospy.loginfo(f"轨迹规划成功 (覆盖率 {fraction*100:.2f}%)，准备执行。")
+                    rospy.loginfo("============ 执行轨迹 ============")
+                    self.execute_plan(letter_plan)
+                    rospy.loginfo(f"字符 '{char_to_draw}' 绘制完成。")
+                else:
+                    rospy.logwarn(f"轨迹规划覆盖率较低 ({fraction*100:.2f}%)，不执行。")
+                rospy.sleep(2)
+            # 返回初始姿态
+            rospy.loginfo("============ 返回初始姿态 ============")
+            if not self.move_J(ready_joint_angles):
+                rospy.logerr("返回初始姿态失败，中止。")
+                return
+            rospy.loginfo("成功返回初始姿态。")
+            # 是否继续
+            continue_response = input("是否绘制下一个字符? (y/n)，默认继续: ").strip().lower()
+            if continue_response == 'n':
+                break
 
 
 if __name__ == '__main__':
