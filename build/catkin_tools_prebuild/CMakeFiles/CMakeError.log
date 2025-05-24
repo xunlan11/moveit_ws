@@ -1,21 +1,21 @@
 Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_14b60/fast && /usr/bin/make -f CMakeFiles/cmTC_14b60.dir/build.make CMakeFiles/cmTC_14b60.dir/build
+Run Build Command(s):/usr/bin/make cmTC_d7b73/fast && /usr/bin/make -f CMakeFiles/cmTC_d7b73.dir/build.make CMakeFiles/cmTC_d7b73.dir/build
 make[1]: 进入目录“/home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp”
-Building C object CMakeFiles/cmTC_14b60.dir/src.c.o
-/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_14b60.dir/src.c.o   -c /home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_14b60
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_14b60.dir/link.txt --verbose=1
-/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_14b60.dir/src.c.o  -o cmTC_14b60 
-/usr/bin/ld: CMakeFiles/cmTC_14b60.dir/src.c.o: in function `main':
+Building C object CMakeFiles/cmTC_d7b73.dir/src.c.o
+/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_d7b73.dir/src.c.o   -c /home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_d7b73
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d7b73.dir/link.txt --verbose=1
+/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_d7b73.dir/src.c.o  -o cmTC_d7b73 
+/usr/bin/ld: CMakeFiles/cmTC_d7b73.dir/src.c.o: in function `main':
 src.c:(.text+0x46): undefined reference to `pthread_create'
 /usr/bin/ld: src.c:(.text+0x52): undefined reference to `pthread_detach'
 /usr/bin/ld: src.c:(.text+0x63): undefined reference to `pthread_join'
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_14b60.dir/build.make:87：cmTC_14b60] 错误 1
+make[1]: *** [CMakeFiles/cmTC_d7b73.dir/build.make:87：cmTC_d7b73] 错误 1
 make[1]: 离开目录“/home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp”
-make: *** [Makefile:121：cmTC_14b60/fast] 错误 2
+make: *** [Makefile:121：cmTC_d7b73/fast] 错误 2
 
 
 Source file was:
@@ -41,18 +41,18 @@ int main(void)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/make cmTC_26acd/fast && /usr/bin/make -f CMakeFiles/cmTC_26acd.dir/build.make CMakeFiles/cmTC_26acd.dir/build
+Run Build Command(s):/usr/bin/make cmTC_ec244/fast && /usr/bin/make -f CMakeFiles/cmTC_ec244.dir/build.make CMakeFiles/cmTC_ec244.dir/build
 make[1]: 进入目录“/home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp”
-Building C object CMakeFiles/cmTC_26acd.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_26acd.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
-Linking C executable cmTC_26acd
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_26acd.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_26acd.dir/CheckFunctionExists.c.o  -o cmTC_26acd  -lpthreads 
+Building C object CMakeFiles/cmTC_ec244.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_ec244.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.16/Modules/CheckFunctionExists.c
+Linking C executable cmTC_ec244
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ec244.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_ec244.dir/CheckFunctionExists.c.o  -o cmTC_ec244  -lpthreads 
 /usr/bin/ld: 找不到 -lpthreads
 collect2: error: ld returned 1 exit status
-make[1]: *** [CMakeFiles/cmTC_26acd.dir/build.make:87：cmTC_26acd] 错误 1
+make[1]: *** [CMakeFiles/cmTC_ec244.dir/build.make:87：cmTC_ec244] 错误 1
 make[1]: 离开目录“/home/robot/moveit_ws/build/catkin_tools_prebuild/CMakeFiles/CMakeTmp”
-make: *** [Makefile:121：cmTC_26acd/fast] 错误 2
+make: *** [Makefile:121：cmTC_ec244/fast] 错误 2
 
 
 

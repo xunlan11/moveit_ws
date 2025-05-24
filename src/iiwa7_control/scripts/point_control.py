@@ -33,7 +33,7 @@ class PointControl:
             )                          
         # Rviz轨迹可视化
         self.marker_publisher = rospy.Publisher(
-            '/eef_trajectory_marker',
+            '/visualization_marker',
             Marker,
             queue_size=10
             )
@@ -41,11 +41,11 @@ class PointControl:
         self.planning_frame = self.move_group.get_planning_frame()
         rospy.loginfo("机器人参考坐标系: %s" % self.planning_frame)
         # 末端执行器链接
-        self.eef_link = self.move_group.get_end_effector_link()
-        rospy.loginfo("末端执行器: %s" % self.eef_link)
+        eef_link = self.move_group.get_end_effector_link()
+        rospy.loginfo("末端执行器: %s" % eef_link)
         # 机器人组
-        self.group_names = self.robot.get_group_names()
-        rospy.loginfo("机器人组: %s" % self.group_names)
+        group_names = self.robot.get_group_names()
+        rospy.loginfo("机器人组: %s" % group_names)
         # 当前状态
         initial_state = self.move_group.get_current_state()
         rospy.loginfo("初始当前状态: %s" % initial_state)
@@ -103,20 +103,6 @@ class PointControl:
             return False
         rospy.loginfo("执行目标角度成功。")
         return True
-    # 移动到指定位姿
-    def go_to(self, pose_goal):
-        rospy.loginfo(f"尝试移动到目标位姿: P({pose_goal.position.x:.3f}, {pose_goal.position.y:.3f}, {pose_goal.position.z:.3f}), "
-                      f"Q({pose_goal.orientation.x:.3f}, {pose_goal.orientation.y:.3f}, {pose_goal.orientation.z:.3f}, {pose_goal.orientation.w:.3f})")
-        self.move_group.set_pose_target(pose_goal)
-        success = self.move_group.go(wait=True)
-        self.move_group.stop()
-        # 实现规划清除目标
-        self.move_group.clear_pose_targets()
-        if success:
-            rospy.loginfo("移动目标位姿成功。")
-        else:
-            rospy.logerr("移动目标位姿失败。")
-        return success
     # 规划笛卡尔路径
     def plan_cartesian_path(self, waypoints):
         # 较低的最大速度和加速度缩放因子，确保成功且平滑
@@ -188,15 +174,13 @@ class PointControl:
         self.clear_markers()
         # 初始姿态：非奇异
         rospy.loginfo("============ 移动到初始姿态 ============")
-        # ready_joint_angles = [0.0, np.deg2rad(-15), 0.0, np.deg2rad(-90), 0.0, np.deg2rad(90), 0.0]
-        ready_joint_angles = [0.0, 0, 0.0, 0, 0.0, 0, 0.0]
+        ready_joint_angles = [0.0, np.deg2rad(-15), 0.0, np.deg2rad(-90), 0.0, np.deg2rad(90), 0.0]
         if not self.move_J(ready_joint_angles):
             rospy.logerr("移动到初始姿态失败，中止。")
             return
         rospy.loginfo("成功移动到初始姿态，请按回车键继续。")
         input()
         # 获取当前姿态
-        center = None
         current_pose_msg = self.move_group.get_current_pose()
         center = current_pose_msg.pose
         # 定义五角星轨迹

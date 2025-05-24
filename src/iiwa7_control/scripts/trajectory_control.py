@@ -5,7 +5,6 @@ import sys
 import copy
 import rospy
 import moveit_commander
-import moveit_msgs.msg
 import numpy as np
 from visualization_msgs.msg import Marker
 import letter
@@ -15,14 +14,8 @@ class TrajectoryControl:
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('iiwa7_trajectory_control', anonymous=True)
         self.robot = moveit_commander.RobotCommander()
-        self.scene = moveit_commander.PlanningSceneInterface()
         self.move_group = moveit_commander.MoveGroupCommander("manipulator")
         self.move_group.set_planning_time(15.0)
-        self.display_trajectory_publisher = rospy.Publisher(
-            '/move_group/display_planned_path',
-            moveit_msgs.msg.DisplayTrajectory,
-            queue_size=20
-            )
         self.marker_publisher = rospy.Publisher(
             '/visualization_marker',
             Marker,
@@ -30,12 +23,12 @@ class TrajectoryControl:
             )
         self.planning_frame = self.move_group.get_planning_frame()
         rospy.loginfo("机器人参考坐标系: %s" % self.planning_frame)
-        self.eef_link = self.move_group.get_end_effector_link()
-        rospy.loginfo("末端执行器: %s" % self.eef_link)
-        self.group_names = self.robot.get_group_names()
-        rospy.loginfo("机器人组: %s" % self.group_names)
-        self.initial_pose = self.move_group.get_current_pose().pose
-        rospy.loginfo(f"初始末端位姿: {self.initial_pose}")
+        eef_link = self.move_group.get_end_effector_link()
+        rospy.loginfo("末端执行器: %s" % eef_link)
+        group_names = self.robot.get_group_names()
+        rospy.loginfo("机器人组: %s" % group_names)
+        initial_pose = self.move_group.get_current_pose().pose
+        rospy.loginfo(f"初始末端位姿: {initial_pose}")
     # 移动到指定关节角度
     def move_J(self, joint_goal_array):
         current_joints = self.move_group.get_current_joint_values()
@@ -61,8 +54,8 @@ class TrajectoryControl:
         self.move_group.set_max_acceleration_scaling_factor(0.1)
         waypoints_list = copy.deepcopy(waypoints)
         (plan, fraction) = self.move_group.compute_cartesian_path(
-            waypoints_list,  # 路径点列表
-            0.01,            # 末端执行器步长
+            waypoints_list,
+            0.01,         
         )
         rospy.loginfo(f"笛卡尔路径规划完成，成功比例: {fraction:.2f}。")
         return plan, fraction
@@ -146,9 +139,9 @@ class TrajectoryControl:
             if not input_char_str:
                 break
             char_to_draw = input_char_str
-            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" 
+            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" # 字体路径
             desired_letter_height_m = 0.15 # 10cm高
-            num_samples_per_curve = 15
+            num_samples_per_curve = 15 # 每条曲线采样点数
             letter_waypoints = letter.generate_letter_waypoints_from_font(
                 char_to_draw=char_to_draw,
                 font_path=font_path,
@@ -161,9 +154,9 @@ class TrajectoryControl:
                 rospy.logerr(f"未能为字符 '{char_to_draw}' 生成轨迹点。")
             else:
                 rospy.loginfo(f"成功为字符 '{char_to_draw}' 生成 {len(letter_waypoints)} 个轨迹点。")
-                # 显示生成的绿色轨迹点
-                self.show_path(letter_waypoints, ns="letter_trajectory", r=0.0, g=1.0, b=0.0)
+                self.show_path(letter_waypoints, ns="letter_trajectory")
                 rospy.sleep(1)
+                # 规划并执行
                 rospy.loginfo("============ 规划笛卡尔路径 ============")
                 letter_plan, fraction = self.plan_cartesian_path(letter_waypoints)
                 if fraction > 0.85:
@@ -181,7 +174,7 @@ class TrajectoryControl:
                 return
             rospy.loginfo("成功返回初始姿态。")
             # 是否继续
-            continue_response = input("是否绘制下一个字符? (y/n)，默认继续: ").strip().lower()
+            continue_response = input("是否绘制下一个字符? (!n/n): ").strip().lower()
             if continue_response == 'n':
                 break
 
