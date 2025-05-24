@@ -1,5 +1,5 @@
 # 本仓库仅供课程学习使用
-# 机器人学导论实验
+# 机器人学导论实验：iwwa7机械臂的控制
 参考内容：
 - 张涛：https://github.com/Suixin04/ws_moveit.git
 - 张禹豪：https://github.com/Ruochen0513/forABB_IRB_1410
