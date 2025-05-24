@@ -276,8 +276,13 @@ class PointControl:
         if len(waypoints) >= 2: # 保证轨迹至少有两个点
             p0 = waypoints[0].position
             p1 = waypoints[1].position
-            obstacle_pose.pose.position.x = (p0.x + p1.x) / 2 + 0.1
-            obstacle_pose.pose.position.y = (p0.y + p1.y) / 2 + 0.1
+            # 无法躲避障碍物
+            #obstacle_pose.pose.position.x = (p0.x + p1.x) / 2 + 0.1
+            #obstacle_pose.pose.position.y = (p0.y + p1.y) / 2 + 0.1
+            #obstacle_pose.pose.position.z = (p0.z + p1.z) / 2
+            # 可躲避障碍物
+            obstacle_pose.pose.position.x = (p0.x + p1.x) / 2 - 0.4
+            obstacle_pose.pose.position.y = (p0.y + p1.y) / 2 + 0.18
             obstacle_pose.pose.position.z = (p0.z + p1.z) / 2
             obstacle_pose.pose.orientation.w = 1.0
             obstacle_size = (0.1, 0.01, 0.1) # 障碍物尺寸
